@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  padding: 5%;
+
+  height: 80%;
+}
+
+
+.example-button-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
