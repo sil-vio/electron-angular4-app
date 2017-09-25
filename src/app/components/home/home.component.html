@@ -1,6 +1,6 @@
 <md-card>
 <form class="example-form">
-  <h2>Crea</h2>
+  <h2>Crea isLoaded: {{loaded$ | async }} isLoading: {{loading$ | async}}</h2>
   <table class="example-full-width" cellspacing="0">
     <tr>
       <td>
@@ -18,33 +18,8 @@
 
 <md-card>
 <div class="example-container mat-elevation-z8">
-
-  <md-table #table [dataSource]="dataSource">
-
-    <!--- Note that these columns can be defined in any order.
-            The actual rendered columns are set as a property on the row definition" -->
-
-    <!-- ID Column -->
-    <ng-container mdColumnDef="id">
-      <md-header-cell *mdHeaderCellDef> ID </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
-    </ng-container>
-
-    <!-- Progress Column -->
-    <ng-container mdColumnDef="value">
-      <md-header-cell *mdHeaderCellDef> Valore </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.value}} </md-cell>
-    </ng-container>
-
-    <!-- Name Column -->
-    <ng-container mdColumnDef="date">
-      <md-header-cell *mdHeaderCellDef> Data </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.date | date:'medium' }} </md-cell>
-    </ng-container>
-
-    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
-  </md-table>
-
+  <div *ngFor='let transaction of transactions$ | async'>
+    {{transaction.value}} - {{transaction.date |  date:'medium'}}
+  </div>
 </div>
 </md-card>

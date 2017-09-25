@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionService } from '../../services/rest.service'
 
 import { TransactionDTO } from '../../dto/TransactionDTO'
 
-import {MdSnackBar} from '@angular/material';
+import { MdSnackBar } from '@angular/material';
 
-import {DataSource} from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/collections';
 
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../reducers/index';
+import * as action from '../../actions/app.action';
+
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
@@ -25,81 +28,35 @@ import 'rxjs/add/observable/fromEvent';
 export class HomeComponent implements OnInit {
 
   transaction: TransactionDTO;
-  transactions: TransactionDTO[];
 
-  dataSource: ExampleDataSource | null;
-  
-  displayedColumns = ['id', 'value', 'date'];  
+  transactions$: Observable<TransactionDTO[]>;
 
-  constructor(private transactionService: TransactionService, public snackBar: MdSnackBar) { 
-    this.dataSource = new ExampleDataSource(this.transactionService);
-    this.transaction = new TransactionDTO;
-    this.transactions = new Array<TransactionDTO>();
+  loading$: Observable<boolean>;
+
+  loaded$: Observable<boolean>;
+
+  state$: Observable<fromRoot.AppState>;
+
+  constructor(public snackBar: MdSnackBar, private store: Store<fromRoot.AppState>) {
+    this.loaded$ = store.select(state => state.transaction.loaded);
+    this.loading$ = store.select(state => state.transaction.loading);
+    this.transactions$ = store.select(state => state.transaction.transactions);
+
+    this.transaction = new TransactionDTO();
   }
 
   ngOnInit() {
-    let eventSource = new EventSource('http://localhost:8080/events/');
-    eventSource.addEventListener('message', (event) => {
-      console.log("<<<<<<<", event)
-      this.openSnackBar(event.data)
-      this.dataSource = new ExampleDataSource(this.transactionService);
-      
-    });
-    
-
+    this.store.dispatch(new action.LoadTransactions(null));
   }
 
   createTransaction() {
-    this.transactionService.insertTransaction(this.transaction).subscribe(
-      res => {
-          this.getTransactionList();
-      }
-    )
-
-
-  }
-
-
-  getTransactionList() {
-    this.transactionService.getTransaction("").subscribe(
-      res => {
-          this.transactions = res;
-      },
-      err => {
-          console.log("errore", err);
-      });
+    this.store.dispatch(new action.LoadTransactions(null));
   }
 
   openSnackBar(message: string) {
-    this.snackBar.open(message, "chiudi", {
+    this.snackBar.open(message, 'chiudi', {
       duration: 3000,
     });
   }
 
-}
-
-
-export class ExampleDataSource extends DataSource<TransactionDTO> {
-  _filterChange = new BehaviorSubject('');
-  get filter(): string { return this._filterChange.value; }
-  set filter(filter: string) { this._filterChange.next(filter); }
-
-  constructor(private transactionService: TransactionService) {
-    super();
-  }
-
-  /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<TransactionDTO[]> {
-    return this.transactionService.getTransaction("");
-  }
-
-  disconnect() {}
-}
-
-interface Callback { (data: any): void; }
-
-declare class EventSource {
-    onmessage: Callback;
-    addEventListener(event: string, cb: Callback): void;
-    constructor(name: string);
 }

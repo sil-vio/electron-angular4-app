@@ -12,11 +12,17 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+
+import { CollectionEffects } from './effects/app.effect'
+
 import { AppRoutingModule } from './app-routing.module';
 
 import { ElectronService } from './providers/electron.service';
 
 import { TransactionService } from './services/rest.service'
+import { reducers } from './reducers/index'
 
 @NgModule({
   declarations: [
@@ -34,7 +40,9 @@ import { TransactionService } from './services/rest.service'
     MdTableModule,
     MdCardModule,
     HttpModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot([CollectionEffects])
   ],
   providers: [ElectronService, TransactionService],
   bootstrap: [AppComponent]

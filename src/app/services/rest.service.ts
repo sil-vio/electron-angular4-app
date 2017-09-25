@@ -9,8 +9,8 @@ import { TransactionDTO } from '../dto/TransactionDTO'
 @Injectable()
 export class TransactionService {
 
-    private urlTransaction: string = "http://localhost:8080/transaction/";
-    
+    private urlTransaction = 'http://localhost:8080/transaction/';
+
     private headers: Headers;
     constructor(private http: Http) {
         this.headers = new Headers;
@@ -21,13 +21,13 @@ export class TransactionService {
 
         return this.http.post(this.urlTransaction, transaction).map(
             res => {
-                console.log("inserted", res)
+                console.log('inserted', res)
             },
             err => Observable.throw(err)
         )
     }
 
-    public getTransaction(id: string) : Observable<Array<TransactionDTO>> {
+    public getTransaction(id: string): Observable<Array<TransactionDTO>> {
         return this.http.get(this.urlTransaction + id).map(
             res => res.json(),
             err => Observable.throw(err)
